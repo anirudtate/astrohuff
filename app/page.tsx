@@ -233,7 +233,7 @@ const FeaturesSection = () => {
   return (
     <div className="relative max-w-7xl mx-auto px-8 pt-16 pb-24">
       <motion.h2
-        className="text-4xl font-bold text-center mb-16 relative z-10"
+        className="text-4xl sm:text-5xl font-bold text-center mb-16 relative z-10 text-primary"
         {...fadeIn}
       >
         Discover Your Cosmic Journey
@@ -255,6 +255,39 @@ const FeaturesSection = () => {
           </motion.div>
         ))}
       </div>
+
+      <motion.div
+        className="flex justify-center mt-16"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+      >
+        <Button
+          variant="outline"
+          size="lg"
+          className="group px-8 py-6 text-lg hover:scale-105 transition-transform duration-300 hover:bg-primary/5"
+          asChild
+        >
+          <Link href="/features" className="flex items-center gap-2">
+            More Features
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="group-hover:translate-x-1 transition-transform duration-300"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </Link>
+        </Button>
+      </motion.div>
     </div>
   );
 };
@@ -264,20 +297,24 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       quote:
-        "AstroHuff has completely transformed how I understand my life path.",
+        "AstroHuff has completely transformed how I understand my life path. The insights provided are incredibly accurate and have helped me make better decisions.",
       author: "Sarah M.",
       role: "Spiritual Coach",
+      avatar: "✨",
     },
     {
       quote:
-        "The AI astrologer provides incredibly accurate and insightful readings.",
+        "The AI astrologer provides incredibly accurate and insightful readings. It's like having a personal astrologer available 24/7 to guide me through life's challenges.",
       author: "Raj P.",
       role: "Tech Entrepreneur",
+      avatar: "🌟",
     },
     {
-      quote: "The most comprehensive Kundli matching tool I've ever used.",
+      quote:
+        "The most comprehensive Kundli matching tool I've ever used. It helped me understand compatibility aspects I never knew existed.",
       author: "Priya K.",
       role: "Life Coach",
+      avatar: "⭐",
     },
   ];
 
@@ -305,8 +342,13 @@ const TestimonialsSection = () => {
 
   return (
     <div className="relative max-w-7xl mx-auto px-8 py-32 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-primary/5 to-background/0" />
+      <div className="absolute h-64 w-64 -top-32 -right-32 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute h-64 w-64 -bottom-32 -left-32 bg-primary/5 rounded-full blur-3xl" />
+
       <motion.h2
-        className="text-4xl font-bold text-center mb-16"
+        className="text-4xl sm:text-5xl font-bold text-center mb-16 text-primary"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -314,7 +356,7 @@ const TestimonialsSection = () => {
         What Our Users Say
       </motion.h2>
 
-      <div className="relative max-w-2xl mx-auto">
+      <div className="relative max-w-4xl mx-auto">
         <div className="relative overflow-hidden">
           <motion.div
             className="flex"
@@ -326,15 +368,13 @@ const TestimonialsSection = () => {
                 key={`${testimonial.author}-${index}`}
                 className="group p-8 rounded-xl bg-card/30 backdrop-blur-sm border border-border hover:border-primary/50 transition-colors hover:bg-card/40 flex flex-col items-start gap-4 w-full flex-shrink-0"
               >
-                <div className="text-4xl mb-4">✨</div>
-                <p className="text-lg italic relative">
+                <div className="text-5xl mb-4">{testimonial.avatar}</div>
+                <p className="text-xl italic relative text-muted-foreground">
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div className="mt-auto pt-4 border-t border-border/50 w-full">
-                  <p className="font-semibold">{testimonial.author}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {testimonial.role}
-                  </p>
+                  <p className="font-semibold text-lg">{testimonial.author}</p>
+                  <p className="text-muted-foreground">{testimonial.role}</p>
                 </div>
               </motion.div>
             ))}
@@ -368,11 +408,12 @@ const TestimonialsSection = () => {
               <button
                 key={index}
                 onClick={() => setCurrentTestimonial(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
+                className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
                   currentTestimonial === index
                     ? "bg-primary"
-                    : "bg-muted-foreground/30"
+                    : "bg-primary/20 hover:bg-primary/40"
                 }`}
+                aria-label={`Go to testimonial ${index + 1}`}
               />
             ))}
           </div>
@@ -406,24 +447,77 @@ const TestimonialsSection = () => {
 const CallToAction = () => {
   return (
     <motion.div
-      className="relative text-center py-32 px-4 sm:px-6"
+      className="relative text-center py-32 px-4 sm:px-6 overflow-hidden"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
     >
-      <h2 className="text-3xl sm:text-4xl font-bold mb-8 relative">
-        Begin Your Spiritual Journey Today
-      </h2>
-      <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto relative px-4">
-        Join thousands of users discovering their cosmic destiny
-      </p>
-      <Button
-        size="lg"
-        className="px-8 sm:px-12 py-6 text-base sm:text-lg relative"
-        asChild
-      >
-        <Link href="/sign-up">Start Free Trial</Link>
-      </Button>
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-primary/5 to-background/0" />
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:32px_32px]" />
+      </div>
+      <div className="absolute h-48 w-48 -top-12 -right-12 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute h-48 w-48 -bottom-12 -left-12 bg-primary/5 rounded-full blur-3xl" />
+
+      <div className="relative z-10 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-primary">
+            Unlock Your Cosmic Potential
+          </h2>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
+            Join our community of seekers discovering their true path through
+            ancient wisdom and modern technology
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4 }}
+        >
+          <Button
+            size="lg"
+            className="w-full sm:w-auto px-8 sm:px-12 py-6 text-base sm:text-lg relative group"
+            asChild
+          >
+            <Link href="/sign-up" className="flex items-center gap-2">
+              Get Started
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="group-hover:translate-x-1 transition-transform duration-300"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto px-8 sm:px-12 py-6 text-base sm:text-lg relative hover:bg-primary/5"
+            asChild
+          >
+            <Link href="/features">View Features</Link>
+          </Button>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
