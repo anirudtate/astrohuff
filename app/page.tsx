@@ -7,8 +7,32 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return null;
+  }
+
   return (
     <>
       <Header />
@@ -185,13 +209,13 @@ const DashboardPreview = () => {
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 rounded-xl border border-border bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden"
+          className="relative z-10 rounded-[32px] border-[12px] border-border bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden"
         >
           <Image
             src="/dashboard.png"
             alt="AstroHuff Dashboard"
-            width={800}
-            height={450}
+            width={1200}
+            height={675}
             className="w-full h-full object-cover"
             priority
           />

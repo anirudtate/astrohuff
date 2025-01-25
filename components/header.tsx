@@ -4,13 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useAuth } from "@/lib/auth-context";
+import { signOut } from "@/lib/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  isAuthenticated: boolean;
+  userEmail?: string | null;
+  onSignOut: () => void;
 }
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => (
+const MobileMenu = ({
+  isOpen,
+  onClose,
+  isAuthenticated,
+  userEmail,
+  onSignOut,
+}: MobileMenuProps) => (
   <motion.div
     className="fixed inset-0 z-50 md:hidden"
     animate={isOpen ? "open" : "closed"}
@@ -59,19 +79,47 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => (
           </Button>
         </div>
         <nav className="flex flex-col gap-4">
-          <Link
-            href="/features"
-            className="text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
-          >
-            Features
-          </Link>
-          <hr className="border-border my-2" />
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button className="w-full" asChild>
-            <Link href="/sign-up">Sign Up</Link>
-          </Button>
+          {!isAuthenticated && (
+            <Link
+              href="/features"
+              className="text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              Features
+            </Link>
+          )}
+          {isAuthenticated ? (
+            <>
+              <div className="text-sm text-muted-foreground py-2">
+                {userEmail}
+              </div>
+              <hr className="border-border my-2" />
+              <Link
+                href="/dashboard"
+                className="text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/profile"
+                className="text-lg text-muted-foreground hover:text-foreground transition-colors py-2"
+              >
+                Edit Profile
+              </Link>
+              <Button variant="destructive" onClick={onSignOut}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <hr className="border-border my-2" />
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button className="w-full" asChild>
+                <Link href="/sign-up">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </nav>
       </div>
     </motion.div>
@@ -80,6 +128,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => (
 
 export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <>
@@ -89,20 +142,57 @@ export const Header = () => {
             ✨ AstroHuff
           </Link>
           <div className="hidden md:flex items-center gap-6">
-            <Link
-              href="/features"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Features
-            </Link>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/sign-up">Sign Up</Link>
-              </Button>
-            </div>
+            {!user && (
+              <Link
+                href="/features"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Features
+              </Link>
+            )}
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/dashboard"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>
+                      <span className="block text-sm font-medium">
+                        {user.email}
+                      </span>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">Edit Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleSignOut}
+                      className="text-red-500"
+                    >
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/sign-up">Sign Up</Link>
+                </Button>
+              </div>
+            )}
           </div>
           <Button
             variant="ghost"
@@ -131,6 +221,9 @@ export const Header = () => {
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        isAuthenticated={!!user}
+        userEmail={user?.email}
+        onSignOut={handleSignOut}
       />
     </>
   );
