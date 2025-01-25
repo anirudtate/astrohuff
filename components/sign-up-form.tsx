@@ -77,7 +77,7 @@ export function SignUpForm({
       }
 
       router.push("/dashboard")
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred")
     } finally {
       setLoading(false)
@@ -99,7 +99,7 @@ export function SignUpForm({
       }
 
       router.push("/dashboard")
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred")
     } finally {
       setGoogleLoading(false)

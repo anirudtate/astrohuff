@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { sendPasswordResetEmail } from "@/lib/auth"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,7 +29,6 @@ export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const router = useRouter()
   const [error, setError] = useState<string>("")
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -73,7 +71,7 @@ export function ForgotPasswordForm({
       }
 
       setSuccess(true)
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred")
     } finally {
       setLoading(false)
@@ -86,7 +84,7 @@ export function ForgotPasswordForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Reset your password</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a link to reset your password
+            Enter your email address and we&apos;ll send you a link to reset your password
           </CardDescription>
         </CardHeader>
         <CardContent>
