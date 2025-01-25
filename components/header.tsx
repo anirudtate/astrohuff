@@ -14,13 +14,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   isAuthenticated: boolean;
   userEmail?: string | null;
+  userName?: string | null;
+  userPhotoURL?: string | null;
   onSignOut: () => void;
 }
 
@@ -29,6 +31,8 @@ const MobileMenu = ({
   onClose,
   isAuthenticated,
   userEmail,
+  userName,
+  userPhotoURL,
   onSignOut,
 }: MobileMenuProps) => (
   <motion.div
@@ -89,8 +93,27 @@ const MobileMenu = ({
           )}
           {isAuthenticated ? (
             <>
-              <div className="text-sm text-muted-foreground py-2">
-                {userEmail}
+              <div className="flex items-center gap-3 py-2">
+                <Avatar>
+                  <AvatarImage src={userPhotoURL || undefined} />
+                  <AvatarFallback>
+                    {userName
+                      ? userName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                      : userEmail?.[0].toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  {userName && (
+                    <span className="text-sm font-medium">{userName}</span>
+                  )}
+                  <span className="text-sm text-muted-foreground">
+                    {userEmail}
+                  </span>
+                </div>
               </div>
               <hr className="border-border my-2" />
               <Link
@@ -134,6 +157,15 @@ export const Header = () => {
     await signOut();
   };
 
+  // Get user's initials for avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -160,15 +192,33 @@ export const Header = () => {
                 </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <User className="h-4 w-4" />
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-3 p-1 px-2"
+                    >
+                      <span className="text-sm font-medium hidden sm:inline-block">
+                        {user.displayName || "Account"}
+                      </span>
+                      <Avatar>
+                        <AvatarImage src={user.photoURL || undefined} />
+                        <AvatarFallback>
+                          {user.displayName
+                            ? getInitials(user.displayName)
+                            : user.email?.[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>
-                      <span className="block text-sm font-medium">
-                        {user.email}
-                      </span>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {user.displayName}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -223,6 +273,8 @@ export const Header = () => {
         onClose={() => setIsMobileMenuOpen(false)}
         isAuthenticated={!!user}
         userEmail={user?.email}
+        userName={user?.displayName}
+        userPhotoURL={user?.photoURL}
         onSignOut={handleSignOut}
       />
     </>

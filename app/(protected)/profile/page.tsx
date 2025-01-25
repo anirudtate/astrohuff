@@ -8,22 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from "framer-motion";
 import { updateProfile } from "@/lib/auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FirebaseError } from "firebase/app";
+import { User } from "firebase/auth";
 import * as z from "zod";
 
 const profileSchema = z.object({
   displayName: z.string().min(2, "Display name must be at least 2 characters"),
-  photoURL: z.string().url("Invalid URL").optional().or(z.literal("")),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user } = useAuth() as { user: User | null };
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,7 +36,6 @@ export default function ProfilePage() {
     mode: "onBlur",
     defaultValues: {
       displayName: user?.displayName || "",
-      photoURL: user?.photoURL || "",
     },
   });
 
@@ -54,7 +52,6 @@ export default function ProfilePage() {
 
       const { error: updateError } = await updateProfile(user, {
         displayName: data.displayName,
-        photoURL: data.photoURL,
       });
 
       if (updateError) {
@@ -77,48 +74,41 @@ export default function ProfilePage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-24 pb-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Your Profile
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Update your profile information
-            </p>
-          </motion.div>
+      <main className="min-h-screen bg-background pt-20 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* User Welcome Section */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+              <h1 className="text-2xl font-semibold">Profile Settings</h1>
+              <p className="text-muted-foreground">
+                Manage your account preferences
+              </p>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Information */}
+            <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Edit Profile</CardTitle>
+                <CardTitle>Personal Information</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {error && (
-                    <p
-                      className="text-sm text-red-500 text-center"
+                    <div
+                      className="bg-destructive/10 text-destructive p-3 rounded-md text-sm"
                       role="alert"
                     >
                       {error}
-                    </p>
+                    </div>
                   )}
                   {success && (
-                    <p
-                      className="text-sm text-green-500 text-center"
+                    <div
+                      className="bg-green-500/10 text-green-500 p-3 rounded-md text-sm"
                       role="alert"
                     >
                       Profile updated successfully
-                    </p>
+                    </div>
                   )}
 
                   <div className="grid gap-2">
@@ -128,42 +118,70 @@ export default function ProfilePage() {
                       id="displayName"
                       placeholder="Your display name"
                       disabled={loading || isSubmitting}
+                      className="max-w-md"
                     />
                     {errors.displayName && (
-                      <p className="text-sm text-red-500" role="alert">
+                      <p className="text-sm text-destructive" role="alert">
                         {errors.displayName.message}
                       </p>
                     )}
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="photoURL">Profile Photo URL</Label>
-                    <Input
-                      {...register("photoURL")}
-                      id="photoURL"
-                      placeholder="https://example.com/photo.jpg"
-                      disabled={loading || isSubmitting}
-                    />
-                    {errors.photoURL && (
-                      <p className="text-sm text-red-500" role="alert">
-                        {errors.photoURL.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex justify-end">
+                  <div className="flex items-center gap-4">
                     <Button
                       type="submit"
                       disabled={loading || isSubmitting}
                       className="w-full sm:w-auto"
                     >
-                      {loading ? "Updating..." : "Update Profile"}
+                      {loading ? "Updating..." : "Save Changes"}
                     </Button>
+                    {(loading || isSubmitting) && (
+                      <p className="text-sm text-muted-foreground">
+                        Updating your profile...
+                      </p>
+                    )}
                   </div>
                 </form>
               </CardContent>
             </Card>
-          </motion.div>
+
+            {/* Account Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium">Email Address</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Account Created</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.metadata.creationTime
+                        ? new Date(
+                            user.metadata.creationTime
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Last Sign In</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.metadata.lastSignInTime
+                        ? new Date(
+                            user.metadata.lastSignInTime
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
       <Footer />
