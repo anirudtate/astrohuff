@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { getUserProfile, createUserProfile, updateUserProfile } from "@/lib/db";
+import { updateUserProfile } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const router = useRouter();
 
   const form = useForm<FormValues>({
@@ -101,23 +101,18 @@ export default function OnboardingPage() {
   });
 
   useEffect(() => {
-    async function checkProfile() {
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-
-      const profile = await getUserProfile(user.uid);
-      if (profile?.onboardingCompleted) {
-        router.push("/dashboard");
-      } else if (!profile) {
-        await createUserProfile(user.uid, {});
-      }
-      setLoading(false);
+    if (!user) {
+      router.push("/login");
+      return;
     }
 
-    checkProfile();
-  }, [user, router]);
+    if (profile?.onboardingCompleted) {
+      router.push("/dashboard");
+      return;
+    }
+
+    setLoading(false);
+  }, [user, profile, router]);
 
   const onSubmit = async (data: FormValues) => {
     if (!user) return;

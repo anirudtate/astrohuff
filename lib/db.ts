@@ -1,6 +1,17 @@
 import { db } from "./firebase";
-import { UserProfile } from "./types";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  birthDate: string;
+  birthTime: string;
+  birthPlace: string;
+  gender: "male" | "female" | "other";
+  onboardingCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export async function getUserProfile(
   userId: string
@@ -29,7 +40,7 @@ export async function createUserProfile(
       birthDate: "",
       birthTime: "",
       birthPlace: "",
-      gender: "other",
+      gender: "male",
       onboardingCompleted: false,
       createdAt: now,
       updatedAt: now,

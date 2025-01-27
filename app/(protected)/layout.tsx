@@ -4,37 +4,28 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import { getUserProfile } from "@/lib/db";
 
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
-  const [checkingProfile, setCheckingProfile] = useState(true);
 
   useEffect(() => {
-    async function checkAuth() {
-      if (!loading && !user) {
+    if (!loading) {
+      if (!user) {
         router.push("/login");
-        return;
+      } else if (!profile?.onboardingCompleted) {
+        router.push("/onboarding");
       }
-
-      if (user) {
-        const profile = await getUserProfile(user.uid);
-        if (!profile?.onboardingCompleted) {
-          router.push("/onboarding");
-        }
-        setCheckingProfile(false);
-      }
+      setChecking(false);
     }
+  }, [user, profile, loading, router]);
 
-    checkAuth();
-  }, [user, loading, router]);
-
-  if (loading || checkingProfile) {
+  if (loading || checking) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
@@ -42,7 +33,7 @@ export default function ProtectedLayout({
     );
   }
 
-  if (!user) {
+  if (!user || !profile?.onboardingCompleted) {
     return null;
   }
 
