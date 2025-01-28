@@ -64,16 +64,42 @@ const zodiacSigns = [
   "Pisces",
 ];
 
-function ChartDisplay({ data }: { data: BirthChartResponse["output"] }) {
+function ChartDisplay({
+  data,
+  rasiSvg,
+  navamsaSvg,
+}: {
+  data: BirthChartResponse["output"];
+  rasiSvg: { statusCode: number; output: string };
+  navamsaSvg: { statusCode: number; output: string };
+}) {
   if (!data) return null;
 
-  const [_, planetMap] = data;
+  const [, planetMap] = data;
   const planets = Object.entries(planetMap).filter(
     ([key]) => !["debug", "13"].includes(key)
   );
 
   return (
     <div className="space-y-8">
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Rasi (Birth) Chart</h3>
+          <div
+            className="w-full aspect-square bg-white rounded-lg p-4"
+            dangerouslySetInnerHTML={{ __html: rasiSvg.output }}
+          />
+        </div>
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Navamsa (D9) Chart</h3>
+          <div
+            className="w-full aspect-square bg-white rounded-lg p-4"
+            dangerouslySetInnerHTML={{ __html: navamsaSvg.output }}
+          />
+        </div>
+      </div>
+
       {/* Planetary Positions */}
       <div>
         <h3 className="text-xl font-semibold mb-4">Planetary Positions</h3>
@@ -112,6 +138,14 @@ function ChartDisplay({ data }: { data: BirthChartResponse["output"] }) {
 
 export default function BirthChartPage() {
   const [chartData, setChartData] = useState<BirthChartResponse | null>(null);
+  const [rasiSvg, setRasiSvg] = useState<{
+    statusCode: number;
+    output: string;
+  } | null>(null);
+  const [navamsaSvg, setNavamsaSvg] = useState<{
+    statusCode: number;
+    output: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -142,7 +176,24 @@ export default function BirthChartPage() {
         parseFloat(tzHours) +
         (parseFloat(tzMinutes) / 60) * (timezone.startsWith("-") ? -1 : 1);
 
-      const response = await fetch(
+      const requestBody = {
+        year: parseInt(year),
+        month: parseInt(month),
+        date: parseInt(day),
+        hours: parseInt(hours),
+        minutes: parseInt(minutes),
+        seconds: 0,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        timezone: timezoneFloat,
+        settings: {
+          observation_point: "topocentric",
+          ayanamsha: "lahiri",
+        },
+      };
+
+      // Fetch planetary positions
+      const planetResponse = await fetch(
         "https://json.freeastrologyapi.com/planets",
         {
           method: "POST",
@@ -150,32 +201,55 @@ export default function BirthChartPage() {
             "Content-Type": "application/json",
             "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
           },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      // Fetch Rasi chart SVG
+      const rasiResponse = await fetch(
+        "https://json.freeastrologyapi.com/horoscope-chart-svg-code",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
+          },
           body: JSON.stringify({
-            year: parseInt(year),
-            month: parseInt(month),
-            date: parseInt(day),
-            hours: parseInt(hours),
-            minutes: parseInt(minutes),
-            seconds: 0,
-            latitude: parseFloat(latitude),
-            longitude: parseFloat(longitude),
-            timezone: timezoneFloat,
-            settings: {
-              observation_point: "topocentric",
-              ayanamsha: "lahiri",
-            },
+            ...requestBody,
+            language: "en",
           }),
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API Error Response:", errorText);
-        throw new Error(`Failed to fetch birth chart: ${errorText}`);
+      // Fetch Navamsa chart SVG
+      const navamsaResponse = await fetch(
+        "https://json.freeastrologyapi.com/navamsa-chart-svg-code",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
+          },
+          body: JSON.stringify({
+            ...requestBody,
+            language: "en",
+          }),
+        }
+      );
+
+      if (!planetResponse.ok || !rasiResponse.ok || !navamsaResponse.ok) {
+        throw new Error("Failed to fetch chart data");
       }
 
-      const chartData = await response.json();
-      setChartData(chartData);
+      const [planetData, rasiData, navamsaData] = await Promise.all([
+        planetResponse.json(),
+        rasiResponse.json(),
+        navamsaResponse.json(),
+      ]);
+
+      setChartData(planetData);
+      setRasiSvg(rasiData);
+      setNavamsaSvg(navamsaData);
     } catch (err) {
       console.error("Birth chart API error:", err);
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -317,7 +391,7 @@ export default function BirthChartPage() {
             </div>
           )}
 
-          {chartData?.output && (
+          {chartData?.output && rasiSvg && navamsaSvg && (
             <motion.div
               className="mt-8"
               initial={{ opacity: 0 }}
@@ -325,7 +399,11 @@ export default function BirthChartPage() {
               transition={{ duration: 0.5 }}
             >
               <Card className="p-6">
-                <ChartDisplay data={chartData.output} />
+                <ChartDisplay
+                  data={chartData.output}
+                  rasiSvg={rasiSvg}
+                  navamsaSvg={navamsaSvg}
+                />
               </Card>
             </motion.div>
           )}
