@@ -1,30 +1,86 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
-  Calendar,
-  Users,
-  Star,
-  Moon,
-  Sun,
-  Clock,
-  MapPin,
-  Calculator,
-  Book,
-  MessageCircle,
-  Gift,
-  Sparkles,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+
+const features = [
+  {
+    title: "Birth Chart Analysis",
+    description:
+      "Explore your personality and life path through Kundli analysis.",
+    icon: "🌟",
+    href: "/birth-chart",
+  },
+  {
+    title: "Kundli Matching",
+    description: "Find your perfect match with compatibility analysis.",
+    icon: "❤️",
+    href: "/kundli-matching",
+  },
+  {
+    title: "Daily Panchang",
+    description: "Get daily astrological updates and muhurat timings.",
+    icon: "📅",
+    href: "/panchang",
+  },
+  {
+    title: "Ask AI Astrologer",
+    description: "Get instant answers from our AI-powered astrologer.",
+    icon: "🤖",
+    href: "/ai-astrologer",
+  },
+  {
+    title: "Transit Predictions",
+    description: "Track planetary movements and their impact on your life.",
+    icon: "🌍",
+    href: "/transits",
+  },
+  {
+    title: "Gemstone Recommendations",
+    description: "Discover gemstones that can enhance your life.",
+    icon: "💎",
+    href: "/gemstones",
+  },
+  {
+    title: "Numerology Analysis",
+    description: "Unlock the power of numbers in your life.",
+    icon: "🔢",
+    href: "/numerology",
+  },
+  {
+    title: "Yearly Horoscope",
+    description: "Get detailed yearly predictions for all areas of life.",
+    icon: "📊",
+    href: "/yearly-horoscope",
+  },
+  {
+    title: "Remedial Solutions",
+    description: "Get personalized remedies for planetary doshas.",
+    icon: "🕉️",
+    href: "/remedies",
+  },
+  {
+    title: "Career Guidance",
+    description: "Make informed career decisions based on your chart.",
+    icon: "💼",
+    href: "/career",
+  },
+  {
+    title: "Relationship Insights",
+    description: "Understand relationships through vedic astrology.",
+    icon: "🤝",
+    href: "/relationships",
+  },
+  {
+    title: "Health Astrology",
+    description: "Learn about health aspects from your birth chart.",
+    icon: "🏥",
+    href: "/health",
+  },
+];
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -32,247 +88,44 @@ export default function DashboardPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background pt-20 pb-16">
+      <main className="min-h-screen bg-background pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* User Welcome & Birth Details Section */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div>
-              <h1 className="text-2xl font-semibold">
-                Welcome back{user?.displayName ? `, ${user.displayName}` : ""}
-              </h1>
-              <p className="text-muted-foreground">
-                Your Personal Astrological Dashboard
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0 flex gap-2">
-              <Button variant="outline" className="text-sm">
-                <Clock className="mr-2 h-4 w-4" />
-                Birth Time: 10:30 AM
-              </Button>
-              <Button variant="outline" className="text-sm">
-                <MapPin className="mr-2 h-4 w-4" />
-                Location: New Delhi
-              </Button>
-            </div>
-          </div>
+          {/* Welcome Section */}
+          <motion.div
+            className="mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-4xl font-bold mb-3 tracking-tight">
+              Welcome{user?.displayName ? `, ${user.displayName}` : ""}
+            </h1>
+            <p className="text-lg text-muted-foreground/80">
+              Your cosmic journey continues here
+            </p>
+          </motion.div>
 
-          {/* Today's Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-primary/5">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Today&apos;s Panchang</p>
-                    <h3 className="text-2xl font-bold">Shubh</h3>
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <Link key={feature.title} href={feature.href}>
+                <motion.div
+                  className="group relative p-6 rounded-xl bg-card/30 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all hover:bg-card/40 cursor-pointer h-full hover:shadow-lg hover:-translate-y-0.5"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl opacity-80">{feature.icon}</span>
+                    <h3 className="text-lg font-semibold">{feature.title}</h3>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-blue-500/5">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Rahu Kaal</p>
-                    <h3 className="text-lg font-bold">10:30 - 12:00</h3>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Moon className="h-6 w-6 text-blue-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-yellow-500/5">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Nakshatra</p>
-                    <h3 className="text-lg font-bold">Rohini</h3>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                    <Star className="h-6 w-6 text-yellow-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-purple-500/5">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Yoga</p>
-                    <h3 className="text-lg font-bold">Shubha</h3>
-                  </div>
-                  <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Sparkles className="h-6 w-6 text-purple-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Features */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Essential Features</CardTitle>
-                <CardDescription>
-                  Access your personalized astrological tools
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Calculator className="h-6 w-6 mb-2" />
-                    Free Kundli
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Users className="h-6 w-6 mb-2" />
-                    Kundli Matching
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Book className="h-6 w-6 mb-2" />
-                    Horoscope 2025
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <MessageCircle className="h-6 w-6 mb-2" />
-                    Talk to Astrologer
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Gift className="h-6 w-6 mb-2" />
-                    Festival Calendar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Star className="h-6 w-6 mb-2" />
-                    Today&apos;s Horoscope
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Remedies & Reports */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Remedies & Reports</CardTitle>
-                <CardDescription>Personalized solutions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start">
-                    <span className="flex items-center">
-                      <Star className="h-4 w-4 mr-2" />
-                      Gemstones Report
-                    </span>
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <span className="flex items-center">
-                      <Moon className="h-4 w-4 mr-2" />
-                      Mangal Dosha
-                    </span>
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <span className="flex items-center">
-                      <Sun className="h-4 w-4 mr-2" />
-                      Sade Sati Report
-                    </span>
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <span className="flex items-center">
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Lal Kitab
-                    </span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upcoming Festivals */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Upcoming Festivals</CardTitle>
-                <CardDescription>Important dates and muhurat</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      date: "Feb 10, 2025",
-                      event: "Mahashivratri",
-                      type: "Major",
-                    },
-                    { date: "Mar 25, 2025", event: "Holi", type: "Major" },
-                    {
-                      date: "Apr 17, 2025",
-                      event: "Ram Navami",
-                      type: "Major",
-                    },
-                  ].map((festival, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-accent"
-                    >
-                      <div>
-                        <p className="font-medium">{festival.event}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {festival.date}
-                        </p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${
-                          festival.type === "Major"
-                            ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {festival.type}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Ask an Astrologer */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Ask an Astrologer</CardTitle>
-                <CardDescription>Expert consultation</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Get instant answers from verified astrologers
+                  <p className="text-sm text-muted-foreground/80">
+                    {feature.description}
                   </p>
-                  <Button className="w-full">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Start Consultation
-                  </Button>
-                  <p className="text-xs text-center text-muted-foreground">
-                    First consultation free*
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+                </motion.div>
+              </Link>
+            ))}
           </div>
         </div>
       </main>
