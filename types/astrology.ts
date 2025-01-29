@@ -36,6 +36,20 @@ interface PlanetMap {
   };
 }
 
+interface AyanamsaData {
+  name: "ayanamsa";
+  value: number;
+}
+
+interface DebugData {
+  observation_point: string;
+  ayanamsha: string;
+}
+
+type FirstOutputItem = Record<string, PlanetData> & {
+  debug: DebugData;
+};
+
 export interface BirthChartResponse {
   statusCode: number;
   input: {
@@ -54,16 +68,9 @@ export interface BirthChartResponse {
     };
   };
   output: [
-    {
-      [key: string]: PlanetData;
-      "13": {
-        name: "ayanamsa";
-        value: number;
-      };
-      debug: {
-        observation_point: string;
-        ayanamsha: string;
-      };
+    Omit<FirstOutputItem, "13" | "debug"> & {
+      "13": AyanamsaData;
+      debug: DebugData;
     },
     PlanetMap
   ];
