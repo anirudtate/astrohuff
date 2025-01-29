@@ -243,11 +243,7 @@ export const Header = () => {
                 <Button variant="ghost" size="sm" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button
-                  size="sm"
-                  className="bg-cosmic-purple hover:bg-cosmic-purple/90"
-                  asChild
-                >
+                <Button size="sm" asChild>
                   <Link href="/sign-up">Sign Up</Link>
                 </Button>
               </div>
