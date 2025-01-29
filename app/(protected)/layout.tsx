@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -13,17 +13,21 @@ export default function ProtectedLayout({
   const { user, profile, loading } = useAuth();
   const [checking, setChecking] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.push("/login");
-      } else if (!profile?.onboardingCompleted) {
-        router.push("/onboarding");
+        router.replace("/login");
+      } else if (
+        !profile?.onboardingCompleted &&
+        !pathname.includes("/onboarding")
+      ) {
+        router.replace("/onboarding");
       }
       setChecking(false);
     }
-  }, [user, profile, loading, router]);
+  }, [user, profile, loading, router, pathname]);
 
   if (loading || checking) {
     return (
@@ -33,7 +37,10 @@ export default function ProtectedLayout({
     );
   }
 
-  if (!user || !profile?.onboardingCompleted) {
+  if (
+    !user ||
+    (!profile?.onboardingCompleted && !pathname.includes("/onboarding"))
+  ) {
     return null;
   }
 

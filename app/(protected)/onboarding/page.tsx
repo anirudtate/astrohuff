@@ -101,17 +101,25 @@ export default function OnboardingPage() {
   });
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    const checkAuth = async () => {
+      try {
+        if (!user) {
+          router.replace("/login");
+          return;
+        }
 
-    if (profile?.onboardingCompleted) {
-      router.push("/dashboard");
-      return;
-    }
+        if (profile?.onboardingCompleted) {
+          router.replace("/dashboard");
+          return;
+        }
 
-    setLoading(false);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error checking auth:", error);
+      }
+    };
+
+    checkAuth();
   }, [user, profile, router]);
 
   const onSubmit = async (data: FormValues) => {
@@ -141,12 +149,20 @@ export default function OnboardingPage() {
         return;
       }
 
-      await updateUserProfile(user.uid, {
+      const profileData = {
         ...data,
         onboardingCompleted: true,
-      });
+        updatedAt: new Date().toISOString(),
+      };
 
-      router.push("/dashboard");
+      // Update the profile
+      await updateUserProfile(user.uid, profileData);
+
+      // Force a longer delay to ensure Firebase updates are propagated
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Force a page reload to ensure fresh state
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Error saving profile:", error);
     } finally {

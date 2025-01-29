@@ -10,6 +10,7 @@ import { Header } from "@/components/header";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -205,6 +206,8 @@ const HeroSection = () => {
 };
 
 const DashboardPreview = () => {
+  const { theme } = useTheme();
+
   return (
     <motion.div className="relative max-w-5xl mx-auto px-8 pb-32 pt-16">
       <motion.div
@@ -232,14 +235,28 @@ const DashboardPreview = () => {
             {/* Glass reflection effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <Image
-              src="/dashboard.png"
-              alt="AstroHuff Dashboard"
-              width={1200}
-              height={675}
-              className="w-full h-full object-cover"
-              priority
-            />
+            <div className="relative">
+              <Image
+                src="/dashboard.png"
+                alt="AstroHuff Dashboard Light Mode"
+                width={1200}
+                height={675}
+                className={`w-full h-full object-cover transition-opacity duration-300 ${
+                  theme === "dark" ? "opacity-0" : "opacity-100"
+                }`}
+                priority
+              />
+              <Image
+                src="/dashboard-dark.png"
+                alt="AstroHuff Dashboard Dark Mode"
+                width={1200}
+                height={675}
+                className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+                  theme === "dark" ? "opacity-100" : "opacity-0"
+                }`}
+                priority
+              />
+            </div>
           </div>
         </div>
       </motion.div>

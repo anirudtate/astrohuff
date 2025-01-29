@@ -178,6 +178,7 @@ export const Header = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
+            <ThemeToggle />
             {!user && (
               <Link
                 href="/features"
@@ -186,7 +187,6 @@ export const Header = () => {
                 Features
               </Link>
             )}
-            <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-4">
                 <Link
