@@ -206,7 +206,8 @@ const HeroSection = () => {
 };
 
 const DashboardPreview = () => {
-  const { theme } = useTheme();
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
     <motion.div className="relative max-w-5xl mx-auto px-8 pb-32 pt-16">
@@ -242,7 +243,7 @@ const DashboardPreview = () => {
                 width={1200}
                 height={675}
                 className={`w-full h-full object-cover transition-opacity duration-300 ${
-                  theme === "dark" ? "opacity-0" : "opacity-100"
+                  currentTheme === "dark" ? "opacity-0" : "opacity-100"
                 }`}
                 priority
               />
@@ -252,7 +253,7 @@ const DashboardPreview = () => {
                 width={1200}
                 height={675}
                 className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
-                  theme === "dark" ? "opacity-100" : "opacity-0"
+                  currentTheme === "dark" ? "opacity-100" : "opacity-0"
                 }`}
                 priority
               />
