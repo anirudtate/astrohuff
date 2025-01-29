@@ -91,7 +91,7 @@ export default function FeaturesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 cosmic-glow">
               Comprehensive Astrological Features
             </h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -104,16 +104,18 @@ export default function FeaturesPage() {
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                className="group p-8 rounded-xl bg-card/30 backdrop-blur-sm border border-border hover:border-primary/50 transition-all hover:bg-card/40"
+                className="group p-8 rounded-xl bg-cosmic-purple/5 backdrop-blur-sm border border-cosmic-purple/20 hover:bg-cosmic-purple/10 transition-all hover:scale-105 duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
               >
-                <motion.div className="text-5xl mb-6">
+                <motion.div className="text-5xl mb-6 cosmic-glow">
                   {feature.icon}
                 </motion.div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-3 text-cosmic-purple">
+                  {feature.title}
+                </h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}

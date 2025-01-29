@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -157,7 +158,6 @@ export const Header = () => {
     await signOut();
   };
 
-  // Get user's initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -168,11 +168,15 @@ export const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl sm:text-2xl font-bold">
-            ✨ AstroHuff
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <div className="absolute inset-0 bg-background/90 backdrop-blur-[2px]" />
+
+        <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="text-xl sm:text-2xl font-semibold">
+            <span className="text-foreground">✨</span>{" "}
+            <span className="text-foreground">AstroHuff</span>
           </Link>
+
           <div className="hidden md:flex items-center gap-6">
             {!user && (
               <Link
@@ -182,6 +186,7 @@ export const Header = () => {
                 Features
               </Link>
             )}
+            <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-4">
                 <Link
@@ -194,14 +199,14 @@ export const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="flex items-center gap-3 p-1 px-2"
+                      className="flex items-center gap-3 p-1 px-2 hover:bg-white/10"
                     >
                       <span className="text-sm font-medium hidden sm:inline-block">
                         {user.displayName || "Account"}
                       </span>
                       <Avatar>
                         <AvatarImage src={user.photoURL || undefined} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-cosmic-purple/10 text-cosmic-purple">
                           {user.displayName
                             ? getInitials(user.displayName)
                             : user.email?.[0].toUpperCase()}
@@ -235,10 +240,14 @@ export const Header = () => {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="ghost" size="sm" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button size="sm" asChild>
+                <Button
+                  size="sm"
+                  className="bg-cosmic-purple hover:bg-cosmic-purple/90"
+                  asChild
+                >
                   <Link href="/sign-up">Sign Up</Link>
                 </Button>
               </div>
@@ -247,7 +256,7 @@ export const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden hover:bg-white/10"
             onClick={() => setIsMobileMenuOpen(true)}
           >
             <svg

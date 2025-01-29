@@ -96,14 +96,23 @@ const ZodiacRing = () => {
     },
   };
 
+  const zodiacColors: Record<number, string> = {
+    0: "bg-cosmic-purple/10 border-cosmic-purple/20 hover:bg-cosmic-purple/20",
+    1: "bg-cosmic-blue/10 border-cosmic-blue/20 hover:bg-cosmic-blue/20",
+    2: "bg-cosmic-pink/10 border-cosmic-pink/20 hover:bg-cosmic-pink/20",
+    3: "bg-cosmic-teal/10 border-cosmic-teal/20 hover:bg-cosmic-teal/20",
+    4: "bg-cosmic-yellow/10 border-cosmic-yellow/20 hover:bg-cosmic-yellow/20",
+    5: "bg-cosmic-orange/10 border-cosmic-orange/20 hover:bg-cosmic-orange/20",
+  };
+
   return (
     <motion.div
       variants={containerVariants}
       initial="initial"
       animate="animate"
-      className="flex flex-wrap justify-center gap-2 mx-auto"
+      className="flex flex-wrap justify-center gap-4 mx-auto"
     >
-      {zodiacSigns.map((sign) => (
+      {zodiacSigns.map((sign, index) => (
         <motion.div
           key={sign.name}
           variants={signVariants}
@@ -111,10 +120,12 @@ const ZodiacRing = () => {
           className="group cursor-pointer"
         >
           <div
-            className="w-14 h-14 flex items-center justify-center text-4xl text-muted-foreground hover:text-primary transition-colors duration-300"
+            className={`w-16 h-16 flex items-center justify-center text-4xl rounded-2xl backdrop-blur-sm transition-all duration-300 ${
+              zodiacColors[index % 6]
+            }`}
             title={sign.name}
           >
-            {sign.symbol}
+            <span className="cosmic-glow">{sign.symbol}</span>
           </div>
         </motion.div>
       ))}
@@ -149,7 +160,8 @@ const HeroSection = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            ✨ AstroHuff
+            <span className="cosmic-glow">✨</span>{" "}
+            <span className="cosmic-glow">AstroHuff</span>
           </motion.h1>
 
           <motion.p
@@ -170,18 +182,10 @@ const HeroSection = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <Button
-              className="w-full sm:w-auto px-6 md:px-8 py-6 text-base sm:text-lg"
-              variant="default"
-              asChild
-            >
+            <Button size="lg" variant="default">
               <Link href="/sign-up">Get Started</Link>
             </Button>
-            <Button
-              className="w-full sm:w-auto px-6 md:px-8 py-6 text-base sm:text-lg"
-              variant="outline"
-              asChild
-            >
+            <Button size="lg" variant="outline">
               <Link href="/login">Login</Link>
             </Button>
           </motion.div>
@@ -203,25 +207,42 @@ const HeroSection = () => {
 const DashboardPreview = () => {
   return (
     <motion.div className="relative max-w-5xl mx-auto px-8 pb-32 pt-16">
-      <div className="relative">
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 rounded-[32px] border-[12px] border-border bg-card/50 backdrop-blur-sm shadow-2xl overflow-hidden"
-        >
-          <Image
-            src="/dashboard.png"
-            alt="AstroHuff Dashboard"
-            width={1200}
-            height={675}
-            className="w-full h-full object-cover"
-            priority
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-card/10 blur-3xl -z-10" />
-      </div>
+      <motion.div
+        className="relative"
+        initial={{ y: 100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        {/* Rainbow glow effects with reduced spread */}
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-cosmic-purple via-cosmic-blue to-cosmic-pink rounded-[32px] opacity-50 blur-lg animate-pulse" />
+        <div className="absolute -inset-1 bg-gradient-to-r from-cosmic-teal via-cosmic-yellow to-cosmic-orange rounded-[32px] opacity-30 blur-xl animate-pulse delay-75" />
+
+        <div className="relative z-10 rounded-[32px] overflow-hidden group">
+          {/* Glass border container */}
+          <div className="absolute inset-0 rounded-[32px] bg-white/20 backdrop-blur-sm">
+            {/* Inner glass border */}
+            <div className="absolute inset-[8px] rounded-[24px] bg-white/5 backdrop-blur-sm">
+              <div className="absolute inset-0 rounded-[24px] bg-background/40 backdrop-blur-md" />
+            </div>
+          </div>
+
+          {/* Main content container */}
+          <div className="relative rounded-[20px] overflow-hidden bg-background/20 backdrop-blur-sm m-[12px]">
+            {/* Glass reflection effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            <Image
+              src="/dashboard.png"
+              alt="AstroHuff Dashboard"
+              width={1200}
+              height={675}
+              className="w-full h-full object-cover"
+              priority
+            />
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
@@ -252,12 +273,12 @@ const FeaturesSection = () => {
         "Get instant answers to your life questions from our AI-powered astrologer",
       icon: "🤖",
     },
-  ];
+  ] as const;
 
   return (
     <div className="relative max-w-7xl mx-auto px-8 pt-16 pb-24">
       <motion.h2
-        className="text-4xl sm:text-5xl font-bold text-center mb-16 relative z-10 text-primary"
+        className="text-4xl sm:text-5xl font-bold text-center mb-16 relative z-10 cosmic-text-gradient"
         {...fadeIn}
       >
         Discover Your Cosmic Journey
@@ -267,14 +288,18 @@ const FeaturesSection = () => {
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
-            className="group p-8 rounded-xl bg-card/30 backdrop-blur-sm border border-border hover:border-primary/50 transition-all hover:bg-card/40"
+            className="group p-8 rounded-xl bg-cosmic-purple/5 backdrop-blur-sm border border-cosmic-purple/20 hover:bg-cosmic-purple/10 transition-all hover:scale-105 duration-300"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
           >
-            <motion.div className="text-5xl mb-6">{feature.icon}</motion.div>
-            <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+            <motion.div className="text-5xl mb-6 cosmic-glow">
+              {feature.icon}
+            </motion.div>
+            <h3 className="text-xl font-semibold mb-3 text-cosmic-purple">
+              {feature.title}
+            </h3>
             <p className="text-muted-foreground">{feature.description}</p>
           </motion.div>
         ))}
@@ -286,12 +311,7 @@ const FeaturesSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <Button
-          variant="outline"
-          size="lg"
-          className="group px-8 py-6 text-lg hover:scale-105 transition-transform duration-300 hover:bg-primary/5"
-          asChild
-        >
+        <Button variant="outline" size="lg" asChild>
           <Link href="/features" className="flex items-center gap-2">
             More Features
             <svg
@@ -366,11 +386,6 @@ const TestimonialsSection = () => {
 
   return (
     <div className="relative max-w-7xl mx-auto px-8 py-32 overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-primary/5 to-background/0" />
-      <div className="absolute h-64 w-64 -top-32 -right-32 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute h-64 w-64 -bottom-32 -left-32 bg-primary/5 rounded-full blur-3xl" />
-
       <motion.h2
         className="text-4xl sm:text-5xl font-bold text-center mb-16 text-primary"
         initial={{ opacity: 0 }}
@@ -476,14 +491,6 @@ const CallToAction = () => {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
     >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-primary/5 to-background/0" />
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:32px_32px]" />
-      </div>
-      <div className="absolute h-48 w-48 -top-12 -right-12 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute h-48 w-48 -bottom-12 -left-12 bg-primary/5 rounded-full blur-3xl" />
-
       <div className="relative z-10 max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -492,7 +499,7 @@ const CallToAction = () => {
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-primary">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-4 cosmic-text-gradient cosmic-glow">
             Unlock Your Cosmic Potential
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
@@ -508,11 +515,7 @@ const CallToAction = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
         >
-          <Button
-            size="lg"
-            className="w-full sm:w-auto px-8 sm:px-12 py-6 text-base sm:text-lg relative group"
-            asChild
-          >
+          <Button size="lg" variant="default">
             <Link href="/sign-up" className="flex items-center gap-2">
               Get Started
               <svg
@@ -525,19 +528,14 @@ const CallToAction = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="group-hover:translate-x-1 transition-transform duration-300"
+                className="ml-2 group-hover:translate-x-1 transition-transform duration-300"
               >
                 <path d="M5 12h14" />
                 <path d="m12 5 7 7-7 7" />
               </svg>
             </Link>
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full sm:w-auto px-8 sm:px-12 py-6 text-base sm:text-lg relative hover:bg-primary/5"
-            asChild
-          >
+          <Button variant="outline" size="lg">
             <Link href="/features">View Features</Link>
           </Button>
         </motion.div>

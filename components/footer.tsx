@@ -8,12 +8,13 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <footer className="relative">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <Link href="/" className="text-xl font-bold">
-              ✨ AstroHuff
+              <span className="text-foreground">✨</span>{" "}
+              <span className="cosmic-text-gradient">AstroHuff</span>
             </Link>
             <div className="flex gap-6">
               {footerLinks.map((item) => (
@@ -34,4 +35,4 @@ export function Footer() {
       </div>
     </footer>
   );
-} 
+}

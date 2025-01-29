@@ -110,19 +110,19 @@ export default function DashboardPage() {
             {features.map((feature, index) => (
               <Link key={feature.title} href={feature.href}>
                 <motion.div
-                  className="group relative p-6 rounded-xl bg-card/30 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all hover:bg-card/40 cursor-pointer h-full hover:shadow-lg hover:-translate-y-0.5"
+                  className="group p-8 rounded-xl bg-cosmic-purple/5 backdrop-blur-sm border border-cosmic-purple/20 hover:bg-cosmic-purple/10 transition-all hover:scale-105 duration-300 h-full"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl opacity-80">{feature.icon}</span>
-                    <h3 className="text-lg font-semibold">{feature.title}</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground/80">
-                    {feature.description}
-                  </p>
+                  <motion.div className="text-4xl mb-4 cosmic-glow">
+                    {feature.icon}
+                  </motion.div>
+                  <h3 className="text-xl font-semibold mb-2 text-cosmic-purple">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
                 </motion.div>
               </Link>
             ))}

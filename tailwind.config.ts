@@ -55,6 +55,14 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        cosmic: {
+          purple: "hsl(var(--cosmic-purple))",
+          blue: "hsl(var(--cosmic-blue))",
+          pink: "hsl(var(--cosmic-pink))",
+          teal: "hsl(var(--cosmic-teal))",
+          yellow: "hsl(var(--cosmic-yellow))",
+          orange: "hsl(var(--cosmic-orange))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
