@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { updateUserProfile } from "@/lib/db";
+import { createUserProfile, getUserProfile, updateUserProfile } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -155,8 +155,13 @@ export default function OnboardingPage() {
         updatedAt: new Date().toISOString(),
       };
 
-      // Update the profile
-      await updateUserProfile(user.uid, profileData);
+      const profile = await getUserProfile(user.uid);
+
+      if (profile) {
+        await updateUserProfile(user.uid, profileData);
+      } else {
+        await createUserProfile(user.uid, profileData);
+      }
 
       // Force a longer delay to ensure Firebase updates are propagated
       await new Promise((resolve) => setTimeout(resolve, 1000));
