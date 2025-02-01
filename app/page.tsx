@@ -130,7 +130,7 @@ const ZodiacRing = () => {
             }`}
             title={sign.name}
           >
-            <span className="cosmic-glow">{sign.symbol}</span>
+            <span className="">{sign.symbol}</span>
           </div>
         </motion.div>
       ))}
@@ -300,7 +300,7 @@ const FeaturesSection = () => {
   return (
     <div className="relative max-w-7xl mx-auto px-8 pt-16 pb-24">
       <motion.h2
-        className="text-4xl sm:text-5xl font-bold text-center mb-16 relative z-10 cosmic-text-gradient"
+        className="text-4xl sm:text-5xl font-bold text-center mb-16 relative z-10 cosmic-text-gradient cosmic-glow"
         {...fadeIn}
       >
         Discover Your Cosmic Journey
@@ -409,7 +409,7 @@ const TestimonialsSection = () => {
   return (
     <div className="relative max-w-7xl mx-auto px-8 py-32 overflow-hidden">
       <motion.h2
-        className="text-4xl sm:text-5xl font-bold text-center mb-16 text-primary"
+        className="text-4xl sm:text-5xl font-bold text-center mb-16 cosmic-text-gradient cosmic-glow"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}

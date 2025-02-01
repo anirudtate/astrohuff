@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+    :root {
     --background: 260 25% 98%;
     --foreground: 260 25% 10%;
-    --card: 260 25% 100%;
+    --card: 260 25% 96%;
     --card-foreground: 260 25% 10%;
     --popover: 260 25% 100%;
     --popover-foreground: 260 25% 10%;
@@ -14,14 +14,14 @@
     --primary-foreground: 0 0% 98%;
     --secondary: 260 15% 95%;
     --secondary-foreground: 260 25% 10%;
-    --muted: 260 15% 95%;
-    --muted-foreground: 260 25% 40%;
+    --muted: 260 15% 85%;
+    --muted-foreground: 260 25% 30%;
     --accent: 260 15% 95%;
     --accent-foreground: 260 25% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 260 15% 90%;
-    --input: 260 15% 90%;
+    --border: 260 15% 80%;
+    --input: 260 15% 80%;
     --ring: 260 85% 55%;
     --radius: 0.8rem;
 
@@ -33,12 +33,12 @@
     --muted-hover: 260 25% 90%;
 
     /* New Cosmic Color Palette */
-    --cosmic-purple: 280 85% 60%;
-    --cosmic-blue: 230 85% 65%;
-    --cosmic-pink: 320 85% 65%;
-    --cosmic-teal: 180 85% 65%;
-    --cosmic-yellow: 45 85% 65%;
-    --cosmic-orange: 30 85% 65%;
+    --cosmic-purple: 280 85% 70%;
+    --cosmic-blue: 230 85% 70%;
+    --cosmic-pink: 320 85% 70%;
+    --cosmic-teal: 180 85% 70%;
+    --cosmic-yellow: 45 85% 70%;
+    --cosmic-orange: 30 85% 70%;
 
     /* Chart Colors */
     --chart-1: 280 85% 60%;
@@ -109,7 +109,7 @@
   }
 
   .cosmic-text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-cosmic-purple via-cosmic-blue to-cosmic-pink;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-cosmic-blue to-primary;
   }
 
   .cosmic-border-gradient {

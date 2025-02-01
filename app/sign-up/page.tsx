@@ -18,7 +18,7 @@ export default function SignUpPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
         <div className="w-full max-w-sm text-center">
           <Loader2 className="h-6 w-6 animate-spin mx-auto" />
         </div>
@@ -27,7 +27,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <SignUpForm />
       </div>
