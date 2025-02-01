@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+console.log("gemini api key", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
 
 export interface UserBirthInfo {

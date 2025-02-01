@@ -2,6 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+  Suggestion,
+} from 'react-places-autocomplete';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { UserBirthInfo } from "@/lib/gemini";
+import { cn } from "@/lib/utils";
 
 interface BirthDetailsDialogProps {
   open: boolean;
@@ -22,13 +27,9 @@ interface BirthDetailsDialogProps {
 }
 
 export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDialogProps) {
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ["places"],
-  });
-
+  const [address, setAddress] = useState("");
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
   const form = useForm<UserBirthInfo>({
     defaultValues: {
       name: "",
@@ -40,23 +41,29 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
     },
   });
 
-  const onPlaceSelected = () => {
-    if (autocomplete) {
-      const place = autocomplete.getPlace();
-      if (place.geometry?.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        form.setValue("birthPlace", place.formatted_address || "");
-        form.setValue("latitude", lat);
-        form.setValue("longitude", lng);
-      }
+  const handleSelect = async (address: string) => {
+    try {
+      const results = await geocodeByAddress(address);
+      const latLng = await getLatLng(results[0]);
+      form.setValue("birthPlace", address);
+      form.setValue("latitude", latLng.lat);
+      form.setValue("longitude", latLng.lng);
+      setAddress(address);
+      setSelectedPlace(address);
+      setSearchError(null);
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
-  const handleSubmit = (data: UserBirthInfo) => {
+  const handleSubmit = form.handleSubmit((data) => {
+    if (!selectedPlace) {
+      setSearchError("Please select a place from the suggestions");
+      return;
+    }
     onSubmit(data);
     onClose();
-  };
+  });
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -67,7 +74,7 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
             This information helps provide accurate astrological insights.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -97,26 +104,77 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
 
           <div className="space-y-2">
             <Label htmlFor="birthPlace">Birth Place</Label>
-            {isLoaded ? (
-              <Autocomplete
-                onLoad={setAutocomplete}
-                onPlaceChanged={onPlaceSelected}
-                options={{ types: ["(cities)"] }}
-              >
-                <Input
-                  id="birthPlace"
-                  {...form.register("birthPlace", { required: "Birth place is required" })}
-                  placeholder="Enter your birth place"
-                />
-              </Autocomplete>
-            ) : (
-              <Input
-                id="birthPlace"
-                {...form.register("birthPlace")}
-                placeholder="Loading Places Autocomplete..."
-                disabled
-              />
-            )}
+            <PlacesAutocomplete
+              value={address}
+              onChange={(value) => {
+                setAddress(value);
+                if (value !== selectedPlace) {
+                  setSelectedPlace(null);
+                  form.setValue("latitude", 0);
+                  form.setValue("longitude", 0);
+                }
+                setSearchError(null);
+              }}
+              onSelect={handleSelect}
+              onError={(status) => {
+                if (status === 'ZERO_RESULTS') {
+                  setSearchError('No locations found. Try a different search term.');
+                }
+              }}
+            >
+              {({
+                getInputProps,
+                suggestions,
+                getSuggestionItemProps,
+                loading,
+              }) => (
+                <div className="relative">
+                  <Input
+                    {...getInputProps({
+                      placeholder: 'Enter your birth place',
+                      className: cn('w-full', searchError && 'border-red-500'),
+                    })}
+                  />
+                  {searchError && (
+                    <p className="text-sm text-red-500 mt-1">{searchError}</p>
+                  )}
+                  {suggestions.length > 0 && (
+                    <div className="absolute z-50 mt-1 w-full">
+                      <div className="rounded-lg border bg-popover shadow-md max-h-[200px] overflow-y-auto">
+                        {loading && (
+                          <div className="flex items-center justify-center py-2 px-2 bg-background">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          </div>
+                        )}
+                        {suggestions.map((suggestion) => {
+                          const style = {
+                            backgroundColor: suggestion.active
+                              ? 'hsl(var(--accent))'
+                              : 'hsl(var(--background))',
+                            color: suggestion.active
+                              ? 'hsl(var(--accent-foreground))'
+                              : 'hsl(var(--foreground))',
+                            cursor: 'pointer',
+                            padding: '8px 12px',
+                          };
+                          return (
+                            <div
+                              {...getSuggestionItemProps(suggestion, {
+                                style,
+                                className: 'text-sm hover:bg-accent hover:text-accent-foreground'
+                              })}
+                              key={suggestion.placeId}
+                            >
+                              {suggestion.description}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </PlacesAutocomplete>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
