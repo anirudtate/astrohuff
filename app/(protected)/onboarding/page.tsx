@@ -17,12 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 
 interface FormValues {
   name: string;
   birthDate: string;
   birthTime: string;
   birthPlace: string;
+  latitude: number;
+  longitude: number;
   gender: "male" | "female" | "other";
 }
 
@@ -86,8 +89,14 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const { user, profile } = useAuth();
   const router = useRouter();
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: ["places"],
+  });
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -95,6 +104,8 @@ export default function OnboardingPage() {
       birthDate: "",
       birthTime: "",
       birthPlace: "",
+      latitude: 0,
+      longitude: 0,
       gender: "" as "male" | "female" | "other",
     },
     mode: "onSubmit",
@@ -175,6 +186,19 @@ export default function OnboardingPage() {
     }
   };
 
+  const onPlaceSelected = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      if (place.geometry?.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        form.setValue("birthPlace", place.formatted_address || "");
+        form.setValue("latitude", lat);
+        form.setValue("longitude", lng);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
@@ -202,9 +226,9 @@ export default function OnboardingPage() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentStep}
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -20, opacity: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className="space-y-4">
@@ -279,22 +303,30 @@ export default function OnboardingPage() {
 
                     {currentFields.includes("birthPlace") && (
                       <div className="space-y-2">
-                        <Label htmlFor="birthPlace">
-                          Birth Place{" "}
-                          <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="birthPlace"
-                          placeholder="City, Country"
-                          {...form.register("birthPlace")}
-                          className={
-                            form.formState.errors.birthPlace
-                              ? "border-destructive"
-                              : ""
-                          }
-                        />
+                        <Label htmlFor="birthPlace">Birth Place</Label>
+                        {isLoaded ? (
+                          <Autocomplete
+                            onLoad={setAutocomplete}
+                            onPlaceChanged={onPlaceSelected}
+                            options={{ types: ["(cities)"] }}
+                          >
+                            <Input
+                              id="birthPlace"
+                              {...form.register("birthPlace")}
+                              placeholder="Enter your birth place"
+                              className={form.formState.errors.birthPlace ? "border-red-500" : ""}
+                            />
+                          </Autocomplete>
+                        ) : (
+                          <Input
+                            id="birthPlace"
+                            {...form.register("birthPlace")}
+                            placeholder="Loading Places Autocomplete..."
+                            disabled
+                          />
+                        )}
                         {form.formState.errors.birthPlace && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-sm text-red-500">
                             {form.formState.errors.birthPlace.message}
                           </p>
                         )}

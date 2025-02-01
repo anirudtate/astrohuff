@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { AiAstrologerPreview } from "@/components/ai-astrologer-preview";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -39,6 +40,9 @@ export default function Home() {
       <Header />
       <div className="relative min-h-screen bg-background mt-10">
         <HeroSection />
+        <div className="py-20">
+          <AiAstrologerPreview />
+        </div>
         <DashboardPreview />
         <FeaturesSection />
         <TestimonialsSection />
