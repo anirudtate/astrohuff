@@ -43,7 +43,7 @@ export default function Home() {
         <div className="py-20">
           <AiAstrologerPreview />
           <div className="p-4" />
-          <div className="mt-16 max-w-4xl mx-auto text-center">
+          <div className="mt-16 p-3 max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
