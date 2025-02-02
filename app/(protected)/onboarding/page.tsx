@@ -17,12 +17,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from "react-places-autocomplete";
+import { cn } from "@/lib/utils";
 
 interface FormValues {
   name: string;
   birthDate: string;
   birthTime: string;
   birthPlace: string;
+  latitude: number;
+  longitude: number;
   gender: "male" | "female" | "other";
 }
 
@@ -66,8 +73,11 @@ const steps: Step[] = [
     description: "Your birth place helps us calculate your exact natal chart",
     fields: ["birthPlace"],
     validation: (data: FormValues) => ({
-      isValid: data.birthPlace.trim().length >= 2,
-      error: "Please enter your birth place (City, Country)",
+      isValid:
+        data.birthPlace.trim().length >= 2 &&
+        data.latitude !== 0 &&
+        data.longitude !== 0,
+      error: "Please select a valid birth place from the suggestions",
     }),
   },
   {
@@ -86,6 +96,9 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [address, setAddress] = useState("");
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
   const { user, profile } = useAuth();
   const router = useRouter();
 
@@ -95,6 +108,8 @@ export default function OnboardingPage() {
       birthDate: "",
       birthTime: "",
       birthPlace: "",
+      latitude: 0,
+      longitude: 0,
       gender: "" as "male" | "female" | "other",
     },
     mode: "onSubmit",
@@ -143,6 +158,12 @@ export default function OnboardingPage() {
         return;
       }
 
+      // Additional validation for birth place
+      if (currentFields.includes("birthPlace") && !selectedPlace) {
+        setSearchError("Please select a place from the suggestions");
+        return;
+      }
+
       if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
         form.clearErrors();
@@ -175,9 +196,25 @@ export default function OnboardingPage() {
     }
   };
 
+  const handleSelect = async (address: string) => {
+    try {
+      const results = await geocodeByAddress(address);
+      const latLng = await getLatLng(results[0]);
+      form.setValue("birthPlace", address);
+      form.setValue("latitude", latLng.lat);
+      form.setValue("longitude", latLng.lng);
+      setAddress(address);
+      setSelectedPlace(address);
+      setSearchError(null);
+    } catch (error) {
+      console.error("Error:", error);
+      setSearchError("Failed to get location details. Please try again.");
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+      <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
         <div className="w-full max-w-sm text-center">
           <Loader2 className="h-6 w-6 animate-spin mx-auto" />
         </div>
@@ -188,7 +225,7 @@ export default function OnboardingPage() {
   const currentFields = steps[currentStep].fields;
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="w-full max-w-sm">
         <Card>
           <CardHeader className="text-center">
@@ -202,9 +239,9 @@ export default function OnboardingPage() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentStep}
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -20, opacity: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className="space-y-4">
@@ -279,25 +316,95 @@ export default function OnboardingPage() {
 
                     {currentFields.includes("birthPlace") && (
                       <div className="space-y-2">
-                        <Label htmlFor="birthPlace">
-                          Birth Place{" "}
-                          <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="birthPlace"
-                          placeholder="City, Country"
-                          {...form.register("birthPlace")}
-                          className={
-                            form.formState.errors.birthPlace
-                              ? "border-destructive"
-                              : ""
-                          }
-                        />
-                        {form.formState.errors.birthPlace && (
-                          <p className="text-sm text-destructive">
-                            {form.formState.errors.birthPlace.message}
-                          </p>
-                        )}
+                        <Label htmlFor="birthPlace">Birth Place</Label>
+                        <PlacesAutocomplete
+                          value={address}
+                          onChange={(value) => {
+                            setAddress(value);
+                            if (value !== selectedPlace) {
+                              setSelectedPlace(null);
+                              form.setValue("latitude", 0);
+                              form.setValue("longitude", 0);
+                              // Clear both form error and search error when user types
+                              form.clearErrors("birthPlace");
+                              setSearchError(null);
+                            }
+                          }}
+                          onSelect={handleSelect}
+                          onError={(status) => {
+                            if (status === "ZERO_RESULTS") {
+                              setSearchError(
+                                "No locations found. Try a different search term."
+                              );
+                            }
+                          }}
+                        >
+                          {({
+                            getInputProps,
+                            suggestions,
+                            getSuggestionItemProps,
+                            loading,
+                          }) => (
+                            <div className="relative">
+                              <Input
+                                {...getInputProps({
+                                  placeholder: "Enter your birth place",
+                                  className: cn(
+                                    "w-full",
+                                    (searchError ||
+                                      form.formState.errors.birthPlace) &&
+                                      "border-destructive"
+                                  ),
+                                })}
+                              />
+                              {(searchError ||
+                                form.formState.errors.birthPlace) && (
+                                <p className="text-sm text-destructive mt-1">
+                                  {searchError ||
+                                    form.formState.errors.birthPlace?.message}
+                                </p>
+                              )}
+                              {suggestions.length > 0 && (
+                                <div className="absolute z-50 mt-1 w-full">
+                                  <div className="rounded-lg border bg-popover shadow-md max-h-[200px] overflow-y-auto">
+                                    {loading && (
+                                      <div className="flex items-center justify-center py-2 px-2 bg-background">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                      </div>
+                                    )}
+                                    {suggestions.map((suggestion) => {
+                                      const style = {
+                                        backgroundColor: suggestion.active
+                                          ? "hsl(var(--accent))"
+                                          : "hsl(var(--background))",
+                                        color: suggestion.active
+                                          ? "hsl(var(--accent-foreground))"
+                                          : "hsl(var(--foreground))",
+                                        cursor: "pointer",
+                                        padding: "8px 12px",
+                                      };
+                                      return (
+                                        <div
+                                          {...getSuggestionItemProps(
+                                            suggestion,
+                                            {
+                                              style,
+                                              className:
+                                                "text-sm hover:bg-accent hover:text-accent-foreground",
+                                            }
+                                          )}
+                                          key={suggestion.placeId}
+                                        >
+                                          {suggestion.description}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </PlacesAutocomplete>
                       </div>
                     )}
 
