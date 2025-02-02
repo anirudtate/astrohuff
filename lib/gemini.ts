@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-console.log("gemini api key", process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "");
 
 export interface UserBirthInfo {
@@ -16,7 +15,7 @@ export async function getAstrologicalResponse(userInfo: UserBirthInfo, question:
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const prompt = `As an AI astrologer, provide insights based on the following birth information and question:
+    const prompt = `You are a concise AI astrologer. Using vedic astrology, provide a brief and direct answer to the user's question. Focus only on the specific question asked, without listing planetary positions or general information. Keep your response under 100 words and format it in a clear, easy-to-read way.
 
 Birth Details:
 - Name: ${userInfo.name}
@@ -26,7 +25,15 @@ Birth Details:
 
 Question: ${question}
 
-Please provide a thoughtful astrological analysis based on vedic astrology principles. Keep the response concise but insightful.`;
+Remember:
+- Be direct and specific to the question
+- No lengthy explanations about houses or planetary positions
+- Keep response under 100 words
+- Use simple language
+- Bold important points using **text**
+- Break long responses into short paragraphs
+- Focus only on answering the specific question
+- Avoid technical astrological terms unless necessary`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;

@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Loader2, MessageSquare, Lock } from "lucide-react";
+import { Loader2, MessageSquare, Lock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { BirthDetailsDialog } from "./birth-details-dialog";
 import { getAstrologicalResponse, UserBirthInfo } from "@/lib/gemini";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 const commonQuestions = [
   "What does my career path look like?",
-  "When will I find love?",
+  "When will I find a life partner?",
   "What are my strengths and weaknesses?",
   "What does this year hold for me?",
   "How can I improve my relationships?",
@@ -146,7 +147,13 @@ export function AiAstrologerPreview() {
                         : "bg-muted"
                     }`}
                   >
-                    {message.content}
+                    {message.role === "assistant" ? (
+                      <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none prose-p:my-3 prose-headings:my-4 prose-ul:my-3 prose-ol:my-3 prose-li:my-0">
+                        {message.content}
+                      </ReactMarkdown>
+                    ) : (
+                      message.content
+                    )}
                   </div>
                 </div>
               ))
@@ -158,32 +165,23 @@ export function AiAstrologerPreview() {
             )}
           </div>
 
-          <div className="relative">
+          <div className="flex gap-2">
             <Input
-              placeholder={
-                questionCount >= 5
-                  ? "Sign up to ask more questions..."
-                  : "Type your question..."
-              }
+              placeholder="Type your question..."
               value={userQuestion}
               onChange={(e) => setUserQuestion(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && userQuestion.trim()) {
-                  handleQuestionSubmit(userQuestion);
-                }
-              }}
               disabled={loading || questionCount >= 5}
             />
-            {questionCount >= 5 && (
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <Button asChild size="sm">
-                  <Link href="/sign-up">
-                    <Lock className="h-4 w-4 mr-2" />
-                    Sign Up
-                  </Link>
-                </Button>
-              </div>
-            )}
+            <Button
+              onClick={() => handleQuestionSubmit(userQuestion)}
+              disabled={!userQuestion.trim() || loading || questionCount >= 5}
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </Card>
 
