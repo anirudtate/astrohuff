@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Loader2, MessageSquare, Lock, Send } from "lucide-react";
+import { Loader2, MessageSquare, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -37,8 +37,10 @@ export function AiAstrologerPreview() {
 
   useEffect(() => {
     const storedBirthInfo = localStorage.getItem(LOCAL_STORAGE_KEYS.BIRTH_INFO);
-    const storedQuestionCount = localStorage.getItem(LOCAL_STORAGE_KEYS.QUESTION_COUNT);
-    
+    const storedQuestionCount = localStorage.getItem(
+      LOCAL_STORAGE_KEYS.QUESTION_COUNT
+    );
+
     if (storedBirthInfo) {
       setBirthInfo(JSON.parse(storedBirthInfo));
     }
@@ -55,10 +57,14 @@ export function AiAstrologerPreview() {
     }
 
     if (questionCount >= 5) {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { role: "user", content: question },
-        { role: "assistant", content: "You've reached the limit of free questions. Please sign up to continue your astrological journey!" }
+        {
+          role: "assistant",
+          content:
+            "You've reached the limit of free questions. Please sign up to continue your astrological journey!",
+        },
       ]);
       return;
     }
@@ -66,21 +72,28 @@ export function AiAstrologerPreview() {
     setLoading(true);
     try {
       const response = await getAstrologicalResponse(birthInfo, question);
-      
+
       const newCount = questionCount + 1;
       setQuestionCount(newCount);
-      localStorage.setItem(LOCAL_STORAGE_KEYS.QUESTION_COUNT, newCount.toString());
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.QUESTION_COUNT,
+        newCount.toString()
+      );
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { role: "user", content: question },
-        { role: "assistant", content: response }
+        { role: "assistant", content: response },
       ]);
-    } catch (error) {
-      setMessages(prev => [
+    } catch {
+      setMessages((prev) => [
         ...prev,
         { role: "user", content: question },
-        { role: "assistant", content: "I apologize, but I couldn't process your request at the moment. Please try again." }
+        {
+          role: "assistant",
+          content:
+            "I apologize, but I couldn't process your request at the moment. Please try again.",
+        },
       ]);
     } finally {
       setLoading(false);
@@ -190,7 +203,7 @@ export function AiAstrologerPreview() {
             <p>{5 - questionCount} questions remaining</p>
           ) : (
             <p>
-              You've used all your free questions.{" "}
+              You&apos;ve used all your free questions.{" "}
               <Link href="/sign-up" className="text-primary hover:underline">
                 Sign up
               </Link>{" "}

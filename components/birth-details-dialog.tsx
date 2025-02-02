@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
-  Suggestion,
-} from 'react-places-autocomplete';
+} from "react-places-autocomplete";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +24,11 @@ interface BirthDetailsDialogProps {
   onSubmit: (data: UserBirthInfo) => void;
 }
 
-export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDialogProps) {
+export function BirthDetailsDialog({
+  open,
+  onClose,
+  onSubmit,
+}: BirthDetailsDialogProps) {
   const [address, setAddress] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
       setSelectedPlace(address);
       setSearchError(null);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -89,7 +91,9 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
             <Input
               id="birthDate"
               type="date"
-              {...form.register("birthDate", { required: "Birth date is required" })}
+              {...form.register("birthDate", {
+                required: "Birth date is required",
+              })}
             />
           </div>
 
@@ -98,7 +102,9 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
             <Input
               id="birthTime"
               type="time"
-              {...form.register("birthTime", { required: "Birth time is required" })}
+              {...form.register("birthTime", {
+                required: "Birth time is required",
+              })}
             />
           </div>
 
@@ -117,8 +123,10 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
               }}
               onSelect={handleSelect}
               onError={(status) => {
-                if (status === 'ZERO_RESULTS') {
-                  setSearchError('No locations found. Try a different search term.');
+                if (status === "ZERO_RESULTS") {
+                  setSearchError(
+                    "No locations found. Try a different search term."
+                  );
                 }
               }}
             >
@@ -131,8 +139,8 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
                 <div className="relative">
                   <Input
                     {...getInputProps({
-                      placeholder: 'Enter your birth place',
-                      className: cn('w-full', searchError && 'border-red-500'),
+                      placeholder: "Enter your birth place",
+                      className: cn("w-full", searchError && "border-red-500"),
                     })}
                   />
                   {searchError && (
@@ -149,19 +157,20 @@ export function BirthDetailsDialog({ open, onClose, onSubmit }: BirthDetailsDial
                         {suggestions.map((suggestion) => {
                           const style = {
                             backgroundColor: suggestion.active
-                              ? 'hsl(var(--accent))'
-                              : 'hsl(var(--background))',
+                              ? "hsl(var(--accent))"
+                              : "hsl(var(--background))",
                             color: suggestion.active
-                              ? 'hsl(var(--accent-foreground))'
-                              : 'hsl(var(--foreground))',
-                            cursor: 'pointer',
-                            padding: '8px 12px',
+                              ? "hsl(var(--accent-foreground))"
+                              : "hsl(var(--foreground))",
+                            cursor: "pointer",
+                            padding: "8px 12px",
                           };
                           return (
                             <div
                               {...getSuggestionItemProps(suggestion, {
                                 style,
-                                className: 'text-sm hover:bg-accent hover:text-accent-foreground'
+                                className:
+                                  "text-sm hover:bg-accent hover:text-accent-foreground",
                               })}
                               key={suggestion.placeId}
                             >

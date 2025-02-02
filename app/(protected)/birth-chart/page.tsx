@@ -199,7 +199,7 @@ export default function BirthChartPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
+            "x-api-key": process.env.ASTROLOGY_API_KEY!,
           },
           body: JSON.stringify(requestBody),
         }
@@ -212,7 +212,7 @@ export default function BirthChartPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
+            "x-api-key": process.env.ASTROLOGY_API_KEY!,
           },
           body: JSON.stringify({
             ...requestBody,
@@ -228,7 +228,7 @@ export default function BirthChartPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": "wSSJZG8XwAEZoQXs6B6D9PzelRyNivo8MsOjprA9",
+            "x-api-key": process.env.ASTROLOGY_API_KEY!,
           },
           body: JSON.stringify({
             ...requestBody,
