@@ -27,6 +27,19 @@ const LOCAL_STORAGE_KEYS = {
   QUESTION_COUNT: "astrohuff_question_count",
 };
 
+const SignUpPrompt = () => (
+  <div className="m-2 mt-4 p-4 bg-muted/50 rounded-lg text-center">
+    <p className="text-sm text-muted-foreground">
+      Want more detailed astrological insights?
+    </p>
+    <Link href="/sign-up">
+      <Button variant="default" className="mt-2">
+        Sign up for in-depth readings
+      </Button>
+    </Link>
+  </div>
+);
+
 export function AiAstrologerPreview() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userQuestion, setUserQuestion] = useState("");
@@ -171,6 +184,10 @@ export function AiAstrologerPreview() {
                 </div>
               ))
             )}
+            {messages.length > 0 &&
+              messages[messages.length - 1].role === "assistant" && (
+                <SignUpPrompt />
+              )}
             {loading && (
               <div className="flex justify-center">
                 <Loader2 className="h-6 w-6 animate-spin" />

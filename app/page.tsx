@@ -42,6 +42,31 @@ export default function Home() {
         <HeroSection />
         <div className="py-20">
           <AiAstrologerPreview />
+          <div className="p-4" />
+          <div className="mt-16 max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl font-bold">
+                Connect with Professional Astrologers
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Get personalized one-to-one consultations with our experienced
+                astrologers. Sign up now to unlock direct chat access and
+                receive in-depth guidance for your life journey.
+              </p>
+              <div className="p-0" />
+              <Link href="/sign-up">
+                <Button size="lg" className="mt-4">
+                  Start Your Journey
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
         </div>
         <DashboardPreview />
         <FeaturesSection />
@@ -460,7 +485,7 @@ const TestimonialsSection = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="m15 18-6-6 6-6" />
+              <path d="M15 18-6-6 6-6" />
             </svg>
           </Button>
 
@@ -496,7 +521,7 @@ const TestimonialsSection = () => {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="m9 18 6-6-6-6" />
+              <path d="M9 18 15-6 21 6" />
             </svg>
           </Button>
         </div>
