@@ -69,47 +69,58 @@ export function BirthDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-y-auto p-4 md:p-6">
         <DialogHeader>
           <DialogTitle>Enter Your Birth Details</DialogTitle>
           <DialogDescription>
             This information helps provide accurate astrological insights.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+        <form onSubmit={handleSubmit} className="space-y-6 md:space-y-4">
+          <div className="space-y-3 md:space-y-2">
+            <Label htmlFor="name" className="w-full text-base md:text-sm">
+              Name
+            </Label>
             <Input
               id="name"
               {...form.register("name", { required: "Name is required" })}
               placeholder="Your name"
+              className="w-full text-base md:text-sm"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="birthDate">Birth Date</Label>
+          <div className="space-y-3 md:space-y-2">
+            <Label htmlFor="birthDate" className="w-full text-base md:text-sm">
+              Birth Date
+            </Label>
             <Input
               id="birthDate"
               type="date"
               {...form.register("birthDate", {
                 required: "Birth date is required",
               })}
+              className="w-full text-base md:text-sm"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="birthTime">Birth Time</Label>
+          <div className="space-y-3 md:space-y-2">
+            <Label htmlFor="birthTime" className="w-full text-base md:text-sm">
+              Birth Time
+            </Label>
             <Input
               id="birthTime"
               type="time"
               {...form.register("birthTime", {
                 required: "Birth time is required",
               })}
+              className="w-full text-base md:text-sm"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="birthPlace">Birth Place</Label>
+          <div className="space-y-3 md:space-y-2">
+            <Label htmlFor="birthPlace" className="w-full text-base md:text-sm">
+              Birth Place
+            </Label>
             <PlacesAutocomplete
               value={address}
               onChange={(value) => {
@@ -136,11 +147,14 @@ export function BirthDetailsDialog({
                 getSuggestionItemProps,
                 loading,
               }) => (
-                <div className="relative">
+                <div className="relative w-full">
                   <Input
                     {...getInputProps({
                       placeholder: "Enter your birth place",
-                      className: cn("w-full", searchError && "border-red-500"),
+                      className: cn(
+                        "w-full text-base md:text-sm",
+                        searchError && "border-red-500"
+                      ),
                     })}
                   />
                   {searchError && (
@@ -148,7 +162,7 @@ export function BirthDetailsDialog({
                   )}
                   {suggestions.length > 0 && (
                     <div className="absolute z-50 mt-1 w-full">
-                      <div className="rounded-lg border bg-popover shadow-md max-h-[200px] overflow-y-auto">
+                      <div className="rounded-lg border bg-popover shadow-md max-h-[40vh] md:max-h-[200px] overflow-y-auto">
                         {loading && (
                           <div className="flex items-center justify-center py-2 px-2 bg-background">
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -170,7 +184,7 @@ export function BirthDetailsDialog({
                               {...getSuggestionItemProps(suggestion, {
                                 style,
                                 className:
-                                  "text-sm hover:bg-accent hover:text-accent-foreground",
+                                  "text-base md:text-sm py-3 px-4 md:py-2 md:px-3 hover:bg-accent hover:text-accent-foreground",
                               })}
                               key={suggestion.placeId}
                             >
@@ -186,11 +200,21 @@ export function BirthDetailsDialog({
             </PlacesAutocomplete>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end space-x-3 pt-6 md:pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 md:flex-none py-5 md:py-2"
+            >
               Cancel
             </Button>
-            <Button type="submit">Continue</Button>
+            <Button
+              type="submit"
+              className="flex-1 md:flex-none py-5 md:py-2"
+            >
+              Continue
+            </Button>
           </div>
         </form>
       </DialogContent>
